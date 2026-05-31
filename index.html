@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDVX コナステ版 VF計算ツール</title>
+  <style>
+    body { background-color: #121824; color: #e2e8f0; font-family: sans-serif; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2d3748; padding-bottom: 10px; margin-bottom: 20px; }
+    .vf-display { font-size: 20px; font-weight: bold; color: #f6ad55; background-color: #2d3748; padding: 10px 20px; border-radius: 8px; }
+    .section { background-color: #1a202c; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    select, input, button { width: 100%; padding: 10px; background-color: #2d3748; color: white; border: 1px solid #4a5568; border-radius: 4px; box-sizing: border-box; }
+    button { background-color: #3182ce; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #2b6cb0; }
+    .btn-secondary { background-color: #4a5568; margin-top: 5px; }
+    .btn-secondary:hover { background-color: #718096; }
+    .btn-danger { background-color: #e53e3e; color: white; border: none; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
+    .btn-danger:hover { background-color: #c53030; }
+    .file-input-wrapper { margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #2d3748; }
+    th { background-color: #2d3748; }
+    .status-text { color: #a0aec0; font-size: 14px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SDVX コナステ版 VF計算ツール</h1>
+      <div class="vf-display">総合VF: <span id="total-vf">0.000</span></div>
+    </header>
+
+    <main>
+      <div class="section">
+        <h2>1. 楽曲マスタの設定</h2>
+        <div class="file-input-wrapper">
+          <label for="master-input">楽曲マスタCSVファイルを選択してください:</label>
+          <input type="file" id="master-input" accept=".csv">
+          <p id="master-status" class="status-text">※最初に楽曲マスタCSVを読み込ませてください。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>2. スコア登録 / データ管理</h2>
+        <form id="score-form">
+          <div class="form-group">
+            <label for="search-input">楽曲を検索 (キーワード入力):</label>
+            <input type="text" id="search-input" placeholder="曲名を入力して絞り込み... (iやvも自動判定)">
+          </div>
+          <div class="form-group">
+            <label for="level-filter-select">難易度で絞り込み:</label>
+            <select id="level-filter-select">
+              <option value="">すべて</option>
+              <option value="18">Lv 18帯 (18.0 〜 18.9)</option>
+              <option value="19">Lv 19帯 (19.0 〜 19.9)</option>
+              <option value="20">Lv 20</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="music-select">楽曲を選択:</label>
+            <select id="music-select" required>
+              <option value="">-- 先に楽曲マスタを読み込んでください --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="score-input">スコア (例: 9900000):</label>
+            <input type="number" id="score-input" min="0" max="10000000" placeholder="9900000" required>
+          </div>
+          <div class="form-group">
+            <label for="medal-select">クリアメダル:</label>
+            <select id="medal-select" required>
+              <option value="PUC">PERFECT ULTIMATE CHAIN (PUC)</option>
+              <option value="UC">ULTIMATE CHAIN (UC)</option>
+              <option value="MAXXIVE">MAXXIVE COMP.</option>
+              <option value="EXC">EXCESSIVE COMP.</option>
+              <option value="COMP">EFFECTIVE COMP.</option>
+              <option value="CRASH">TRACK CRASH</option>
+            </select>
+          </div>
+          <button type="submit">スコアを保存</button>
+        </form>
+
+        <hr style="border: 0; border-top: 1px solid #2d3748; margin: 20px 0;">
+
+        <h3>スコアデータのバックアップ・復元</h3>
+        <button id="export-btn" class="btn-secondary">自分のスコアをCSVとしてエクスポート (PCに保存)</button>
+        <div class="file-input-wrapper">
+          <label style="font-size: 14px; margin-bottom: 5px;">過去のスコアCSVからインポート (復元):</label>
+          <input type="file" id="import-input" accept=".csv">
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>VF 対象曲ベスト 50</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>順位</th>
+              <th>曲名</th>
+              <th>AC難易度</th>
+              <th>スコア</th>
+              <th>メダル</th>
+              <th>単曲VF</th>
+              <th>操作</th> </tr>
+          </thead>
+          <tbody id="best-table-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
